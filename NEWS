@@ -1,0 +1,14 @@
+quickcharts 1.0.0 (Release date: 2022-07-22)
+==============
+
+Changes:
+
+* Using stringr::
+* Installation guide
+
+quickcharts 0.1.1 (Release date: 2022-07-21)
+==============
+
+Changes:
+
+* Release candidate 1. First release.

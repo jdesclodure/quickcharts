@@ -1,0 +1,55 @@
+name: Deploy HTML to GitHub Pages
+
+on:
+  schedule:
+    - cron: '0 0 5 * *'
+    - cron: '0 0 15 * *'
+    - cron: '0 0 20 * *'
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev libcurl4-openssl-dev pandoc
+        shell: bash
+
+      - name: Install R dependencies
+        run: |
+          R -e "install.packages(c('dplyr', 'magrittr', 'plotly', 'rmarkdown', 'stringr', 'rlang', 'tidyr', 'insee'))"
+        shell: bash
+
+      - name: Install quickcharts
+        run: |
+          git clone https://github.com/jdesclodure/quickcharts.git
+          R -e "install.packages('../quickcharts/', repos = NULL, type='source')"
+        shell: bash
+
+      - name: Generate HTML
+        env:
+          INSEE_API_KEY: ${{ secrets.INSEE_API_KEY }}
+        run: |
+          R -e "quickcharts::quickCharts()"
+        shell: bash
+
+      - name: Move HTML to deployment directory
+        run: |
+          mkdir -p deploy
+          cp html/conjoncture_graphiques_*.html deploy/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./deploy
+          publish_branch: gh-pages

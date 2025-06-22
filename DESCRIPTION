@@ -1,0 +1,19 @@
+Package: quickcharts
+Type: Package
+Title: A rmarkdown package to quickly generate charts of cyclical series from Insee
+Version: 1.0.0
+Author: Julien Desclodure
+Description: You will be able to quickly generate charts of cyclical series of the BDM Insee API.
+License: GPL-3 + file LICENSE
+Encoding: UTF-8
+Imports:
+    dplyr,
+    magrittr,
+    plotly, 
+    insee,
+    knitr,
+    rmarkdown,
+    rlang,
+    stringr,
+    tidyr
+RoxygenNote: 7.2.0

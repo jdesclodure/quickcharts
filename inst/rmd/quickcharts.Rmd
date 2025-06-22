@@ -1,0 +1,1856 @@
+---
+title: "Informations rapides de conjoncture de la France"
+author: "Auteur : Julien DESCLODURE"
+date: "Dernière mise à jour : `r format(Sys.time(), '%d/%m/%Y')`"
+output:
+  html_document:
+    css: "../assets/style_cahier_US.css"
+    highlight: textmate
+    fig_caption: yes
+    keep_md: no
+    number_sections: no
+    toc: yes
+    toc_depth: 2
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+  pdf_document:
+    toc: no
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+<style type="text/css">
+
+body {
+    position: absolute;
+    left: 30px;}
+
+.main-container {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.main-container {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+Code du package : [quickcharts](https://github.com/jdesclodure/quickcharts).
+
+```{r setup, set-options, include=FALSE}
+knitr::opts_chunk$set(include=F, cache=F, warning = F, message = F, echo = F, quietly=T,
+                      fig.width=11, results='asis')
+
+# # Uncomment to launch the knit option
+# 
+# library(dplyr)
+# library(insee)
+# library(plotly)
+# library(magrittr)
+# library(rmarkdown)
+# library(rlang)
+# library(stringr)
+# library(knitr)
+# library(tidyr)
+# 
+# source("../../R/plotter.R")
+# source("../../R/get_data.R")
+# source("../../R/get_data_with_id.R")
+# source("../../R/filter_data.R")
+
+# obtenir la liste des idbank
+id_bank_list = insee::get_idbank_list()
+
+# obtenir la liste des datasets
+dataset_list = insee::get_dataset_list()
+
+```
+
+# Climat des affaires {.tabset .tabset-fade .tabset-pills}
+
+## Vue d'ensemble
+```{r , include=F}
+data <- get_data_with_id(
+  c("001565530", "001585934", "001586890", "001580428", "001587025")
+) %>%
+  tidyr::unite(
+    ., col = "ACTIVITE",  ACTIVITE_EC, ACTIVITE_ECB, ACTIVITE_ECCD,
+    ACTIVITE_EC_label_fr, ACTIVITE_ECB_label_fr, ACTIVITE_ECCD_label_fr,
+    NAF2_label_fr, na.rm=TRUE, sep = " - "
+  )
+```
+
+```{r, include=T}
+title <- 'Indicateur du climat des affaires - Série CVS - Mensuelle'
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 80, 
+  title_y_position = 0.97, title = title
+)
+```
+
+## Industrie {.tabset}
+
+```{r , include=F}
+data <- get_data_with_id(c("001585934", "001786503", "001786504", "001786505", "001786506"))
+```
+
+### Vue d'ensemble
+```{r, include=T}
+title <- "Enquête mensuelle de conjoncture dans l'Industrie\nVue d'ensemble du climat des affaires - Série CVS"
+plotter(
+  data = data, groupby = "NAF2_label_fr", top_margin = 100,
+  title_y_position = 0.95, title = title, length_labels = 30
+)
+```
+
+### C1 - Fabrication de denrées alimentaires, etc.
+```{r , include=F}
+data <- get_data_with_id(c("001786503"))
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "NAF2_label_fr", top_margin = 110, 
+  title_y_position = 0.96, title = title
+)
+```
+
+
+### C3 - Fabrication d'équipements électriques, etc.
+```{r , include=F}
+data <- get_data_with_id(c("001786504", "001786513", "001786514", "001786515"))
+```
+
+```{r, include=T}
+title <- "Enquête mensuelle de conjoncture dans l'Industrie C3
+Indicateur synthétique du climat des affaires - Série CVS"
+plotter(
+  data = data, groupby = "NAF2_label_fr", top_margin = 110, 
+  title_y_position = 0.95, title = title
+)
+```
+
+### C4 - Fabrication de matériels de transport
+```{r , include=F}
+data <- get_data_with_id(c("001786505", "001786517", "001786518"))
+```
+
+```{r, include=T}
+title <- "Enquête mensuelle de conjoncture dans l'Industrie C4
+Indicateur synthétique du climat des affaires - Série CVS"
+plotter(
+  data = data, groupby = "NAF2_label_fr", top_margin = 110, 
+  title_y_position = 0.95, title = title
+)
+```
+
+### C5 - Fabrication d'autres produits industriels
+```{r , include=F}
+data <- get_data_with_id(
+  c("001786506", "001786508", "001786509", "001786510", "001786511", "001786512", "001786516")
+)
+```
+
+```{r, include=T}
+title <- "Enquête mensuelle de conjoncture dans l'Industrie C5
+Indicateur synthétique du climat des affaires - Série CVS"
+plotter(
+  data = data, groupby = "NAF2_label_fr", top_margin = 110,
+  title_y_position = 0.95, title = title
+)
+```
+
+## Bâtiment
+```{r , include=F}
+data <- get_data_with_id(c("001586890")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 90,
+  title_y_position = 0.96,
+  title = "Enquête mensuelle de conjoncture dans l'industrie du bâtiment
+  Indicateur synthétique du climat des affaires - Série CVS"
+)
+```
+
+## Services
+```{r , include=F}
+data <- get_data_with_id(
+  c("001587025", "001786553", "001786554", "001786555", "001786556", "001786557", "001786558")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = "Enquête mensuelle de conjoncture dans les services
+  Indicateur synthétique du climat des affaires - Série CVS"
+)
+```
+
+## Commerce de détail
+
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001786559", "001786560", "001580428")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][3])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+## Commerce de gros
+```{r , include=F}
+data <- get_data_with_id(c("001579137")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, 
+  title = title, length_labels = 100
+)
+```
+
+# Industrie {.tabset .tabset-fade .tabset-pills}
+
+## Données mensuelles {.tabset}
+
+```{r , include=F}
+data <- get_data_with_id(c("001585934", "001786503", "001786504", "001786505", "001786506"))
+```
+
+### Climat des affaires
+```{r, include=T}
+title <- "Enquête mensuelle de conjoncture dans l'Industrie\nVue d'ensemble du climat des affaires - Série CVS"
+plotter(
+  data = data, groupby = "NAF2_label_fr", top_margin = 100,
+  title_y_position = 0.95, title = title, length_labels = 30
+)
+```
+
+### Perspectives générales de la production
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586052", "001786536", "001786537", "001786538", "001786539"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], " - ", title[[1]][3], "\n", title[[1]][4], " - ", title[[1]][5])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue des prix de vente
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586141", "001586143", "001586145", "001586147", "001586149"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance passée de la production
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586064", "001586066", "001586068", "001586070", "001586072"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue de la production
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586103", "001586105", "001586107", "001586109", "001586111"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Niveau des carnets de commandes globaux
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001585942", "001585944", "001585946", "001585948", "001585950"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Niveau des carnets de commandes étrangers
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001585980", "001585982", "001585984", "001585986", "001585988"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Niveau des stocks
+```{r , include=F}
+data <- get_data_with_id(c("001586017", "001586019", "001586021", "001586023", "001586025"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Incertitude économique
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010753788", "010753790", "010753791", "010753792", "010753793"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Effectifs passés
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010546531", "010546526", "010546527", "010546529", "010546530"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Effectifs prévus
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010546493", "010546488", "010546489", "010546491", "010546492"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+## Données trimestrielles {.tabset}
+
+### Tendance prévue des exportations
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586264", "001586266", "001586268", "001586270", "001586272"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Perspectives générales de salaires
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586276", "001586278", "001586280", "001586282", "001586284"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Évolution de la demande étrangère
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586453", "001586455", "001586457", "001586459", "001586461"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Position compétitive  {.tabset}
+#### France
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586341", "001586343", "001586345", "001586347", "001586349"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### UE
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586355", "001586382", "001586384", "001586386", "001586388"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Hors UE
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586288", "001586306", "001586308", "001586333", "001586335"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+### Délais de livraison
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586467", "001586469", "001586471", "001586473", "001586475"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Prix de vente {.tabset}
+#### Passés à l’exportation
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586603", "001586605", "001586607", "001586609", "001586611"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Passés
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586639", "001586641", "001586643", "001586645", "001586647"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Variation passée (moyenne)
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586366", "001586368", "001586370", "001586372", "001586374"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Variation prévue (moyenne)
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586380", "001586406", "001586408", "001586410", "001586412"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+### Main d’œuvre  {.tabset}
+
+#### Difficultés de recrutement
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586762", "001586764", "001586766", "001586768", "001586770"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Barrière à l'embauche 
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c("010599372", "010599373", "010599374", "010599375", "010599376", "010599377", "010599378")
+)
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Facteurs limitant la production {.tabset}
+#### Demande insuffisante
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c("010758336", "01075838", "010758340", "010758342", "010758344")
+)
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], " - ", title[[1]][4], "\n", title[[1]][3])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Manque de personnel
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010758298", "010758299", "010758300", "010758301", "010758302"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Contraintes financières
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010758291", "010758292", "010758293", "010758294", "010758295"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+#### Insuffisance de l’équipement
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010758364", "010758366", "01075868", "010758370", "010758372"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], " - ", title[[1]][4], "\n", title[[1]][3])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Difficultés d'approvisionnements
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010758308", "010758310", "010758312", "010758314", "010758316"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], " - ", title[[1]][4], "\n", title[[1]][3])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Autres facteurs
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010758322", "010758324", "010758326", "010758328", "010758330"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], " - ", title[[1]][4], "\n", title[[1]][3])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+### Goulots {.tabset}
+#### Jugement sur les capacités de production
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586292", "001586294", "001586296", "001586298", "001586300"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Capacités de production
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586739", "001586741", "001586743", "001586745", "001586747"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance de la demande {.tabset}
+#### Demande globale passée
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586503", "001586505", "001586507", "001586509", "001586511"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Demande globale prévue
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586517", "001586519", "001586521", "001586545", "001586547"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Demande d'origine étrangère passée
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586418", "001586420", "001586422", "001586424", "001586426"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Difficultés d'offre ou de demande {.tabset}
+
+#### Difficultés d'offre et de demande
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586670", "001586672", "001586674", "001586676", "001586678"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Difficultés d'offre uniquement
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586684", "001586711", "001586713", "001586715", "001586717"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Difficultés de demande uniquement
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586578", "001586580", "001586582", "001586584", "001586586"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue des investissements
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010753809", "010753810", "010753811", "010753812"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Situation financière
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010754482", "010754484", "010754485", "010754486", "010754487"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "NAF2_label_fr",  top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+# Services {.tabset .tabset-fade .tabset-pills}
+
+## Données mensuelles {.tabset}
+
+### Climat des affaires
+```{r , include=F}
+data <- get_data_with_id(
+  c("001587025", "001786553", "001786554", "001786555","001786556", "001786557", "001786558")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = "Enquête mensuelle de conjoncture dans les services
+  Indicateur synthétique du climat des affaires - Série CVS"
+)
+```
+
+### Perspectives générales de l'activité
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001582248", "001582249", "001582250", "001582251", "001582252", "001582255",
+    "001582256", "001585795")
+)  %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue des prix
+```{r , include=F, cache=F}
+data <-get_data_with_id(
+  c(
+    "001582285", "001582287", "001582288", "001585803", "001582291", "001582292",
+    "001582286", "001582284")
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance passée de l'activité
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001582081", "001582222", "001582224", "001582225", "001582228",
+    "001582229", "001582223", "001582221")
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue de l'activité
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001582085", "001582231", "001582233", "001582234",
+    "001582237", "001582238", "001582232", "001582230")
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Incertitude économique
+```{r , include=F, cache=F}
+data <-get_data_with_id(
+  c(
+    "010754155", "010754159", "010754160", "010754161",
+    "010754162", "010754163", "010754164", "010754165"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Effectifs passés
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001581940", "001581941", "001581942", "001581943",
+    "001581946", "001581947", "001585807", "001581939"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Effectifs prévus
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001581949", "001581950", "001581951", "001581952",
+    "001581955", "001581956", "001585811", "001581948"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+## Données trimestrielles {.tabset}
+
+### Tendance prévue de l'activité à l'étranger
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001585818")) %>% 
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][3], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Perspectives générales de salaires
+```{r , include=F, cache=F}
+data <-get_data_with_id(
+  c(
+    "010754789", "010754793", "010754794", "010754797",
+    "010754798", "010754799", "010754802", "010754804"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Main d’œuvre  {.tabset}
+#### Difficultés de recrutement
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583445", "001583488", "001583490", "001583498",
+    "001583500", "001583530", "001583502", "001583496"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Barrières à l’embauche
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "010599495", "010599496", "010599497", "010599498", "010599499",
+    "010599500", "010599501", "010599502"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+### Facteurs limitant l'activité{.tabset}
+#### Demande insuffisante
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583345", "001633704", "001633714", "001633724",
+    "001633740", "001633750", "001633760", "001633694"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Insuffisance de l'équipement
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583353", "001633706", "001633716", "001633726",
+    "001633742", "001633752", "001633762", "001633696"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Manque de personnel
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583411", "001633710", "001633720", "001633730",
+    "001633746", "001633756", "001633766", "001633700"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+#### Contraintes financières
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583361", "001633708", "001633718", "001633728",
+    "001633744", "001633754", "001633764", "001633698"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Autres facteurs
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583283", "001633702", "001633712", "001633722",
+    "001633738", "001633748", "001633758", "001633692"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue de la demande
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001582240", "001582242", "001582243", "001582246",
+    "001585791", "001582241", "001582247", "001582239"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Difficultés d'offre ou de demande {.tabset}
+
+#### Difficultés d'offre et de demande
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583303", "001583305", "001583307", "001583313",
+    "001583315", "001583363", "001583470", "001583365"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Difficultés d'offre
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583478", "001583379", "001583381", "001583369",
+    "001583371", "001583367", "001583377", "001583425"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+#### Difficultés de demande
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583291", "001583704", "001583706", "001583708",
+    "001583714", "001583716", "001583718", "001583720"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue des investissements
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c("010754410", "010754415", "010754416", "010754417",
+    "010754418", "010754419", "010754420", "010754414"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Situation financière
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c(
+    "001583504", "001583506", "001583508", "001583538",
+    "001583550", "001583552", "001583554", "001583556"
+  )
+) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_EC, ACTIVITE_EC_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+# Industrie du bâtiment  {.tabset .tabset-fade .tabset-pills}
+
+## Données mensuelles {.tabset}
+
+### Climat des affaires
+```{r , include=F}
+data <- get_data_with_id(c("001586890")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 90, title_y_position = 0.96,
+  title = "Enquête mensuelle de conjoncture dans l'industrie du bâtiment
+  Indicateur synthétique du climat des affaires - Série CVS"
+)
+```
+
+### Perspectives générales
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586808"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "TITLE_FR", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue des prix de vente
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586973", "001586924",  "001586974"))  %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance passée de l'activité
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586895", "001586896", "001586897", "001586917")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue de l'activité
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586892", "001586893", "001586894", "001586916")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Carnet de commandes  {.tabset}
+#### Jugement sur le niveau
+```{r , include=F, cache=F}
+data <-get_data_with_id(
+  c("001586918", "001586958", "001586959", "001586960", "001586961", "001586962")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Niveau du carnet en mois de travail
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586919", "001586963", "001586964")) %>%  
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Incertitude économique
+```{r , include=F, cache=F}
+data <-get_data_with_id(
+  c("010754479", "010754480", "010754481", "010754477", "010754478", "010754476")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Effectifs passés
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586921", "001586967", "001586968")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Effectifs prévus
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586920", "001586965", "001586966")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+### Facteurs limitant l'activité
+```{r , include=F, cache=F}
+data <- get_data_with_id(
+  c("010533872","001586873","001586874","001586875","001586877", "001586878","001586888")
+)  
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n","Facteurs limitant l'activité dans le secteur - ", title[[1]][4])
+plotter(data = data, groupby = "INDICATEUR_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Goulots 
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586850", "001586851", "001586852", "001586925", "001586926"))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\nGoulots dans le secteur - ", title[[1]][4])
+plotter(data = data, groupby = "INDICATEUR_label_fr", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Difficultés d'offre ou de demande
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586876","001586887","001586889"))  
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n","Difficultés d'offre ou de demande dans le secteur - ", title[[1]][4])
+plotter(
+  data = data, groupby = "INDICATEUR_label_fr", top_margin = 100, 
+  title_y_position = 0.95, title = title
+)
+```
+
+
+### Tendance prévue des investissements
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586809", "001586831", "001586832"))  %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Situation financière
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586811", "001586835", "001586836")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+## Données trimestrielles {.tabset}
+
+### Perspectives générales du secteur
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586829", "001586808", "001586830")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "TITLE_FR", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Perspectives générales de salaires
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010754785", "010754786", "010754787", "010754783", "010754784", "010754782"))  %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Main d’œuvre  {.tabset}
+
+#### Difficultés de recrutement
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001586807", "001586827", "001586828"))  %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+#### Barrières à l’embauche
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010599444", "010599445", "010599446"))  %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECB, ACTIVITE_ECB_label_fr, na.rm=TRUE, sep = " - ") %>%
+  dplyr::mutate(ACTIVITE = case_when(ACTIVITE == "SO - Sans objet" ~ "Ensemble", TRUE ~ ACTIVITE))
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+# Commerce de détail {.tabset .tabset-fade .tabset-pills}
+
+## Données mensuelles {.tabset}
+### Climat des affaires
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001786559", "001786560", "001580428")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][3], " - ", title[[1]][4], " - ",
+                data$FREQ_label_fr[1])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue des prix de vente
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001579931", "001579930", "001579929")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance passée des affaires
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001580015", "001580016", "001580017")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Tendance prévue des affaires
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001580050", "001580051", "001580052")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Intentions de commandes
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001580429", "001580430", "001580431")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Niveau des stocks
+```{r , include=F}
+data <- get_data_with_id(c("001579969", "001579970", "001579971"))  %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Incertitude économique
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("010754466", "010754467", "010754472")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - Série brute")
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Effectifs passés
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001580470", "001580469", "001580468")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Effectifs prévus
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001579923", "001579924", "001580475")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+## Données bimestrielles {.tabset}
+
+### Évolution des prix de vente passés
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001579949", "001579950", "001579951")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+
+### Situation de trésorerie
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001579943", "001579944", "001580454")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+## Données semestrielles {.tabset}
+
+### Délais de paiement de la clientèle privée
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001580104", "001580105", "001580106")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Délais de paiement de la clientèle publique
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001580111", "001580132", "001580133")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+### Délais de règlement des fournisseurs
+```{r , include=F, cache=F}
+data <- get_data_with_id(c("001580138", "001580139", "001580140")) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCD, ACTIVITE_ECCD_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r , include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, title = title)
+```
+
+# Commerce de gros {.tabset .tabset-fade .tabset-pills}
+
+## Données bimestrielles {.tabset}
+
+### Climat des affaires
+```{r , include=F}
+data <- get_data_with_id(c("001579137")) %>%
+  tidyr::unite(., col = "ACTIVITE", ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+### Perspectives générales d'activité
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579174", "001579384", "001579386", "001579388", "001579390", "001579392", "001579394")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, 
+  title = title, length_labels = 100
+)
+```
+
+### Tendance des prix de ventes {.tabset}
+#### Passée
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579164", "001579324", "001579326", "001579328", "001579330", "001579332", "001579334")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+#### Prévue
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579166", "001579336", "001579338", "001579340", "001579342", "001579344", "001579346")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+#### Prévue à l'étranger
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579168", "001579348", "001579350", "001579352", "001579354", "001579356", "001579358")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, 
+  title = title, length_labels = 100
+)
+```
+
+### Tendance des prix d'achat {.tabset}
+#### Prévue
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579160", "001579300", "001579302", "001579304", "001579306", "001579308", "001579310")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+#### Prévue (fournisseurs étrangers)
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579162", "001579312", "001579314", "001579316", "001579318", "001579320", "001579322")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+
+### Effectifs passés
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579148", "001579228", "001579230", "001579232", "001579234", "001579236", "001579238")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+### Effectifs prévus
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579150", "001579240", "001579242", "001579244", "001579246", "001579248", "001579250")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+### Niveau des stocks
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579172", "001579372", "001579374", "001579376", "001579378", "001579380", "001579382")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+### Commandes {.tabset}
+#### Intentions de commandes à passer
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579144", "001579204", "001579206", "001579208", "001579210", "001579212", "001579214")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+#### Intentions de commandes à passer à l'étranger 
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579142", "001579192", "001579194", "001579196", "001579198", "001579200", "001579202")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+#### Commandes à livrer à l'étranger 
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579140", "001579180", "001579182", "001579184", "001579186", "001579188", "001579190")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+### Livraisons {.tabset}
+#### Livraisons reçues 
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579154", "001579264", "001579266", "001579268", "001579270", "001579272", "001579274")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+#### Livraisons reçues de l'étranger
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579152", "001579252", "001579254", "001579256", "001579258", "001579260", "001579262")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, 
+  title = title, length_labels = 100
+)
+```
+
+### Jugement sur la trésorerie
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579146", "001579216", "001579218", "001579220", "001579222", "001579224", "001579226")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+## Données semestrielles {.tabset}
+
+### Délais de paiement de la clientèle privée
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579156", "001579276", "001579278", "001579280", "001579282", "001579284", "001579286")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+### Délais de paiement de la clientèle publique
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579158", "001579288", "001579290", "001579292", "001579294", "001579296", "001579298")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95,
+  title = title, length_labels = 100
+)
+```
+
+### Délais de règlement accordés par les fournisseurs
+```{r , include=F}
+data <- get_data_with_id(
+  c("001579170", "001579360", "001579362", "001579364", "001579366", "001579368", "001579370")
+) %>%
+  tidyr::unite(., col = "ACTIVITE",  ACTIVITE_ECCG, ACTIVITE_ECCG_label_fr, na.rm=TRUE, sep = " - ")
+```
+
+```{r, include=T}
+title <- stringr::str_split(data$TITLE_FR[1], " - ")
+title <- paste0(title[[1]][1], "\n", title[[1]][2], " - ", title[[1]][4])
+plotter(
+  data = data, groupby = "ACTIVITE", top_margin = 100, title_y_position = 0.95, 
+  title = title, length_labels = 100
+)
+```
