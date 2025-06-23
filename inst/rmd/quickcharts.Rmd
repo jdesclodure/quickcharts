@@ -1,5 +1,5 @@
 ---
-title: "Informations rapides de conjoncture de la France"
+title: "Enquêtes de conjoncture de l’Insee auprès des entreprises"
 author: "Auteur : Julien DESCLODURE"
 date: "Dernière mise à jour : `r format(Sys.time(), '%d/%m/%Y')`"
 output:
