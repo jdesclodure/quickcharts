@@ -15,6 +15,7 @@ on:
   push:
     branches:
       - main
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -22,16 +23,20 @@ jobs:
       - name: Vérifier si le site est déjà à jour
         id: check-update
         run: |
-          # Construit la chaîne attendue : "01/MM/YYYY"
-          EXPECTED="Dernier point : 01/$(date +'%m/%Y')"
-          echo "Chaîne attendue: $EXPECTED"
+          # Récupère mois et année courants
+          MONTH=$(date +'%m')
+          YEAR=$(date +'%Y')
+
+          # Construit une regex : Dernier point : XX/MM/YYYY (XX = 01 à 31)
+          REGEX="Dernier point : [0-3][0-9]/$MONTH/$YEAR"
+          echo "Regex attendue: $REGEX"
 
           # Récupère la page en ligne
           curl -s https://jdesclodure.github.io/quickcharts/ > page.html
 
-          # Vérifie si elle contient déjà la bonne date
-          if grep -q "$EXPECTED" page.html; then
-            echo "Le site est déjà à jour avec: $EXPECTED"
+          # Vérifie si elle contient une date valide du mois/année courants
+          if grep -Eq "$REGEX" page.html; then
+            echo "Le site est déjà à jour (date trouvée pour $MONTH/$YEAR)."
             echo "skip=true" >> $GITHUB_OUTPUT
           else
             echo "Mise à jour nécessaire."
