@@ -59,7 +59,7 @@ The process will take 5-10 minutes and the html file output will be saved in a f
 
 ## Automatic updates of the webpage
 
-The webpage [https://jdesclodure.github.io/quickcharts/](https://jdesclodure.github.io/quickcharts/) is automatically updated on the 5th, 15th and 20th of each month.
+The webpage [https://jdesclodure.github.io/quickcharts/](https://jdesclodure.github.io/quickcharts/) is automatically updated (once) between the 20th and the end of each month.
 
 ## Contributing
 
