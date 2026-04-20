@@ -55,7 +55,7 @@ jobs:
         if: steps.check-update.outputs.skip != 'true'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libssl-dev libcurl4-openssl-dev pandoc
+          sudo apt-get install -y libssl-dev libcurl4-openssl-dev pandoc libuv1-dev
         shell: bash
 
       - name: Install R dependencies
